@@ -17,7 +17,7 @@ contract ExplorerToken1 is ERC721, ERC721Enumerable, Pausable, Ownable {
     bool public allowListMintOpen = false;
     mapping(address => bool) public allowList;
 
-    constructor() ERC721("ExplorerToken1", "EK1") payable {}
+    constructor() ERC721("ExplorerToken1", "EK1") {}
 
     function _baseURI() internal pure override returns (string memory) {
         return "ipfs://Qmaa6TuP2s9pSKczHF4rwWhTKUdygrrDs8RmYYqCjP3Hye/";
@@ -53,7 +53,7 @@ contract ExplorerToken1 is ERC721, ERC721Enumerable, Pausable, Ownable {
     }
 
     function internalMint() internal {
-        require(totalSupply() == maxSupply, "We sold out!");
+        require(totalSupply() < maxSupply, "We sold out!");
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(msg.sender, tokenId);
