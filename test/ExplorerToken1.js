@@ -62,8 +62,7 @@ describe('ExplorerToken1 contract', function () {
     it('Should mint(allow list) an NFT', async function () {
       await explorerToken.editMintWindows(false, true);
       await explorerToken.setAllowList([addr1.address]);
-      await explorerToken.allowListMint({
-        from: addr1.address,
+      await explorerToken.connect(addr1).allowListMint({
         value: hre.ethers.utils.parseEther('0.001'),
       });
       expect(await explorerToken.totalSupply()).to.equal(1);
