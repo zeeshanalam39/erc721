@@ -31,7 +31,10 @@ contract ExplorerToken1 is ERC721, ERC721Enumerable, Pausable, Ownable {
         _unpause();
     }
 
-    function editMintWindows(bool _publicMintOpen, bool _allowListMintOpen) external onlyOwner {
+    function editMintWindows(
+        bool _publicMintOpen,
+        bool _allowListMintOpen
+    ) external onlyOwner {
         publicMintOpen = _publicMintOpen;
         allowListMintOpen = _allowListMintOpen;
     }
@@ -65,8 +68,14 @@ contract ExplorerToken1 is ERC721, ERC721Enumerable, Pausable, Ownable {
     }
 
     function setAllowList(address[] calldata addresses) external onlyOwner {
-        for(uint256 i=0; i<addresses.length; i++) {
+        for (uint256 i = 0; i < addresses.length; i++) {
             allowList[addresses[i]] = true;
+        }
+    }
+
+    function resetAllowList(address[] calldata addresses) external onlyOwner {
+        for (uint256 i = 0; i < addresses.length; i++) {
+            allowList[addresses[i]] = false;
         }
     }
 
@@ -81,12 +90,9 @@ contract ExplorerToken1 is ERC721, ERC721Enumerable, Pausable, Ownable {
 
     // The following functions are overrides required by Solidity.
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721, ERC721Enumerable)
-        returns (bool)
-    {
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view override(ERC721, ERC721Enumerable) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 }

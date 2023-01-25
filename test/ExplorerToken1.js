@@ -59,6 +59,15 @@ describe('ExplorerToken1 contract', function () {
       expect(await explorerToken.totalSupply()).to.equal(1);
     });
 
+    it('Should set & reset allowlist', async function () {
+      expect(await explorerToken.allowList(addr1.address)).to.equal(false);
+      await explorerToken.setAllowList([addr1.address]);
+      expect(await explorerToken.allowList(addr1.address)).to.equal(true);
+
+      await explorerToken.resetAllowList([addr1.address]);
+      expect(await explorerToken.allowList(addr1.address)).to.equal(false);
+    });
+
     it('Should mint(allow list) an NFT', async function () {
       await explorerToken.editMintWindows(false, true);
       await explorerToken.setAllowList([addr1.address]);
@@ -68,8 +77,33 @@ describe('ExplorerToken1 contract', function () {
       expect(await explorerToken.totalSupply()).to.equal(1);
     });
 
-    // Set Allowlist
+    // Withdraw
+    it('Should(owner) withdraw the amount', async function () {
+      expect(await explorerToken.balanceOf(owner.address)).to.equal(0);
+      // Let someone mint so that amount goes to contract/owner.
+      await explorerToken.editMintWindows(true, false);
+      await explorerToken.publicMint({
+        value: hre.ethers.utils.parseEther('0.01'),
+      });
+      await explorerToken.withdraw(owner.address);
+      // console.log('+++ ', await explorerToken.balanceOf(owner.address));  // returns BigNumber { value: "1" }
+      expect(await explorerToken.balanceOf(owner.address)).to.equal(1);
+    });
 
-    // Rejections
+    it('Should fail if user is not on allowlist or calling with insufficient balance', async function () {
+      await explorerToken.editMintWindows(false, true);
+      expect(
+        await explorerToken.connect(addr1).allowListMint({
+          value: hre.ethers.utils.parseEther('0.001'),
+        })
+      ).to.be.revertedWith('You are not on allowlist');
+
+      await explorerToken.setAllowList([addr1.address]);
+      expect(
+        await explorerToken.connect(addr1).allowListMint({
+          value: hre.ethers.utils.parseEther('0'),
+        })
+      ).to.be.revertedWith('Not Enough Funds');
+    });
   });
 });
